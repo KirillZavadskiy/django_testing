@@ -61,14 +61,13 @@ def multi_news():
     '''Создает N-новостей.'''
     today = datetime.today()
     all_news = [
-            News(
-                title=f'Новость {index}',
-                text='Просто текст.',
-                date=today - timedelta(days=index),
-
-            )
-            for index in range(12)
-        ]
+        News(
+            title=f'Новость {index}',
+            text='Просто текст.',
+            date=today - timedelta(days=index),
+        )
+        for index in range(12)
+    ]
     return News.objects.bulk_create(all_news)
 
 
