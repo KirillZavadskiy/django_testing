@@ -43,8 +43,9 @@ def test_author_can_delete_comment(author_client, new, comment):
     url = reverse('news:delete', kwargs={'pk': new.pk})
     response = author_client.delete(url)
     expected_url = reverse(
-            'news:detail', kwargs={'pk': comment.news.pk}
-        ) + '#comments'
+        'news:detail',
+        kwargs={'pk': comment.news.pk}
+    ) + '#comments'
     assertRedirects(response, expected_url)
     comments_count = Comment.objects.count()
     assert comments_count == 0
@@ -56,8 +57,9 @@ def test_author_can_apdate_comment(author_client, new, comment, form_data):
     url = reverse('news:edit', kwargs={'pk': new.pk})
     response = author_client.post(url, data=form_data)
     expected_url = reverse(
-            'news:detail', kwargs={'pk': comment.news.pk}
-        ) + '#comments'
+        'news:detail',
+        kwargs={'pk': comment.news.pk}
+    ) + '#comments'
     assertRedirects(response, expected_url)
     comments_count = Comment.objects.count()
     assert comments_count == 1
