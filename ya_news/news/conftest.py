@@ -1,10 +1,13 @@
 from datetime import datetime, timedelta
 
 import pytest
+from django.urls import reverse
 from django.utils import timezone
 
 from news.forms import BAD_WORDS
 from news.models import Comment, News
+
+url_home = reverse('news:home')
 
 
 @pytest.fixture
@@ -72,8 +75,10 @@ def multi_news():
 
 
 @pytest.fixture
-def form_data():
-    return {'text': 'ТекстТекст'}
+def form_data(new):
+    return {
+        'text': 'ТекстТекст',
+        'news': new}
 
 
 @pytest.fixture

@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 
 from notes.models import Note
@@ -14,7 +14,11 @@ class TestRoutes(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.reader = User.objects.create(username='Читатель')
+        cls.reader_client = Client()
+        cls.reader_client.force_login(cls.reader)
         cls.author = User.objects.create(username='Автор')
+        cls.author_client = Client()
+        cls.author_client.force_login(cls.author)
         cls.note = Note.objects.create(
             title='Заголовок',
             text='Текст',
@@ -38,25 +42,23 @@ class TestRoutes(TestCase):
 
     def test_pages_availability(self):
         '''Авторизованный польз-ель имеет доступ к страницам.'''
-        self.client.force_login(self.reader)
         for name in ('notes:list', 'notes:success', 'notes:add'):
             with self.subTest(name=name):
                 url = reverse(name)
-                response = self.client.get(url)
+                response = self.reader_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_availability_for_comment_edit_and_delete(self):
         '''Доступ к странциам у автора и польз-ляю.'''
         users_statuses = (
-            (self.author, HTTPStatus.OK),
-            (self.reader, HTTPStatus.NOT_FOUND),
+            (self.author_client, HTTPStatus.OK),
+            (self.reader_client, HTTPStatus.NOT_FOUND),
         )
         for user, status in users_statuses:
-            self.client.force_login(user)
             for name in ('notes:detail', 'notes:delete', 'notes:edit'):
                 with self.subTest(user=user, name=name):
                     url = reverse(name, args=(self.note.slug,))
-                    response = self.client.get(url)
+                    response = user.get(url)
                     self.assertEqual(response.status_code, status)
 
     def test_redirect_for_anonymous_client(self):
