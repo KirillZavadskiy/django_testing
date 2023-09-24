@@ -79,6 +79,7 @@ def test_author_can_update_comment(
     assert new_comment.author == author
     assert new_comment.news == form_data['news']
 
+
 @pytest.mark.django_db
 @pytest.mark.usefixtures('comment')
 def test_user_cant_delete_comment(admin_client, new):
